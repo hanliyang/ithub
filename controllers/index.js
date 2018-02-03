@@ -7,5 +7,5 @@
 //
 exports.showIndex = (req,res)=>{
 
-	res.send("show index");
+	res.render("index.html");
 }

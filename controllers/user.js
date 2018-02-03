@@ -1,7 +1,7 @@
 //渲染登录页面
 exports.showSignin = (req,res) =>{
 
-res.send('hello');
+res.render('signin.html');
 
 }
 //处理登陆请求
@@ -13,7 +13,7 @@ res.send('hello');
 //	渲染注册页面
 exports.showSignup = (req,res) =>{
 
-res.send('hello');
+res.render('signup.html');
 
 }
 //处理注册请求
@@ -29,8 +29,3 @@ res.send('hello');
 
 }
 
-exports.showSignin = (req,res) =>{
-
-res.send('hello');
-
-}
