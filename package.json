@@ -1,0 +1,30 @@
+{
+  "name": "ithub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hanliyang/ithub.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hanliyang/ithub/issues"
+  },
+  "homepage": "https://github.com/hanliyang/ithub#readme",
+  "dependencies": {
+    "art-template": "^4.12.2",
+    "blueimp-md5": "^2.10.0",
+    "body-parser": "^1.18.2",
+    "bootstrap": "^3.3.7",
+    "express": "^4.16.2",
+    "express-art-template": "^1.0.0",
+    "express-session": "^1.15.6",
+    "jquery": "^3.3.1",
+    "mysql": "^2.15.0"
+  }
+}
