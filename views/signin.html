@@ -44,8 +44,81 @@
     // 3. 表单验证
     // 4. 验证通过发起登陆请求
     // 5. 根据服务端响应结果做交互处理
+    
+//获取表单对象
+      var $signupForm = $('#signin_form');
 
-    var $signinForm = $('#signin_form')
+//为表单注册提交事件
+      $signupForm.on('submit',function(e){
+          //阻止其他提交事件的产生
+          e.preventDefault()
+          //调用表单提交事件
+          handleSignin();
+
+
+      });
+
+      function handleSignin(){
+
+         //  收集表单数据
+         var formData = $signupForm.serialize();
+         //验证表单数据
+         //验证通过发起注册请求
+         $.ajax({
+          url:"/signin",
+          method:"post",
+          data:formData,
+          dataType:'json',
+          success:function(ret){
+              //对返回来的结果进行处理
+            var code = ret.code;
+            switch(code){
+              case 1:
+              window.alert('邮箱不正确');
+              break;
+               case 2:
+              window.alert('密码不正确');
+              break;
+               case 0:
+              window.location ='/';
+              break;   
+          }
+        
+        },
+          error:function(err){
+
+            window.alert("请求失败了");
+            console.log(err);
+          }
+
+         });
+            
+
+
+
+
+
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   /* var $signinForm = $('#signin_form')
 
     $signinForm.on('submit', function (e) {
       e.preventDefault()
@@ -78,7 +151,7 @@
           console.log(err)
         }
       })
-    }
+    }*/
   </script>
 </body>
 
