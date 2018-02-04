@@ -35,11 +35,13 @@ exports.Signin = (req,res) =>{
 			});
 		}
 		//存储用户
-		req.session.user=ret;
+		
+		req.session.datas= ret;
 		return res.status(200).json({
 			code:0,
 			message:"success"
 		})
+
 
 	});
 	
@@ -112,14 +114,17 @@ exports.signup = (req,res) =>{
 			...body,
 			id:boby.insertId
 		}
-	})
+	});
 
 
 }
 //	处理退出请求
 exports.signout = (req,res) =>{
 
-res.send('hello');
+//删除sesstion
+	delete req.session.user;
+	//重定向
+	res.redirect('/signin');
 
 }
 
