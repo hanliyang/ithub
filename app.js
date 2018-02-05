@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const router = require('./router');
+const indexRouter = require('./routes/index.js');
+const userRouter = require('./routes/user.js');
+const topicRouter = require('./routes/topic.js');
 const app = express();
 //开放资源
 app.use('/node_modules',express.static('./node_modules/'));
@@ -23,7 +25,9 @@ app.use(session({
 }));
 
 //绑定路由容器，使其能在app应用程序中使用
-app.use(router);
+app.use(indexRouter);
+app.use(userRouter);
+app.use('/topic',topicRouter);
 
 
 app.listen(3000,()=>console.log("server is running on port 3000"));
