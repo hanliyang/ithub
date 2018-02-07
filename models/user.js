@@ -1,5 +1,5 @@
 const {query}=require('../utilities/db-helper.js');
-
+const moment = require('moment');
 //构造验证业务数据的方法
 exports.findByEmail=(email,callback)=>{
 
@@ -27,7 +27,7 @@ exports.findByNickname=(nickname,callback)=>{
 //保存到数据库中
 
 exports.save=(body,callback)=>{
-	body.createdAt=null;
+	body.createdAt= moment().format('YYYY-MM-DD HH:mm:ss');
 	query('insert into users set ?',body,function(err,res){
 		if(err){
 			return callback(err);

@@ -9,6 +9,8 @@
   .panel .panel-heading .action i {
     margin-right: 10px;
   }
+ 
+
 </style>
 </head>
 
@@ -17,29 +19,23 @@
   <section class="container">
   <div class="row">
     <div class="col-md-9">
+        {{ if !topics }}
+      <div class="alert alert-danger" role="alert">此话题不存在或已被删除。</div>
+      {{ else }}
       <article class="markdown-body">
-      <h1 id="_1"><a name="user-content-_1" href="#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>测试</h1>
-      <blockquote>
-        <p>杨柳青青江水平</p>
-      </blockquote>
-      <h2 id="_2"><a name="user-content-_2" href="#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>起步</h2>
-      <ul>
-        <li>123</li>
-        <li>456</li>
-        <li>789</li>
-      </ul>
-      <h3 id="_3"><a name="user-content-_3" href="#_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>哈哈哈</h3>
-      <p>然后这里就开始 <code>hello world</code> ，就用可以了。</p>
-      <p>下面是一段代码：</p>
-      <pre><code class="javascript">var foo = 'bar'
-  console.log(foo)
-  </code></pre>
-      <h3 id="_4"><a name="user-content-_4" href="#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>嘿嘿</h3>
-      <h3 id="_5"><a name="user-content-_5" href="#_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>呼呼</h3>
-      <h2 id="_6"><a name="user-content-_6" href="#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>是什么</h2>
-      <h2 id="_7"><a name="user-content-_7" href="#_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>为什么</h2>
-      <h2 id="_8"><a name="user-content-_8" href="#_8" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>怎么做</h2>
-      <h2 id="_9"><a name="user-content-_9" href="#_9" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>哈哈哈</h2>
+      <h1 id="_1"><a name="user-content-_1" href="#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>{{ topics.title }}</h1>
+      <p> 发布于 几秒前  作者 lipengzhou  1 次浏览  来自 客户端测试</p>
+      <!-- 细节处理 -->
+      {{ if topics.userId === user.id }}
+      <p>
+        <a href="/topic/{{ topics.id }}/edit">编辑</a>
+        <a id="delete" href="/topic/{{ topics.id }}/delete">删除</a>
+      </p>
+      {{ /if }}
+      <hr>
+      <!-- 不转义输出 -->
+      <div>{{@ topics.content }}</div>
+      {{ /if }}
     </article>
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -125,6 +121,46 @@
   {{include '../_includes/footer.html'}}
   <script src="/node_modules/jquery/dist/jquery.js"></script>
   <script src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+  <script type="text/javascript">
+    //为删除注册点击事件
+    $('#delete').on('click',function(e){
+        e.preventDefault();
+      //获取路径
+      var url = $(this).attr('href');
+      
+      //确定是否要删除
+      if(!window.confirm("Are You Ok?")){
+        return;
+      }
+
+      //发送ajax请求
+      $.post(url,function(data){
+        var code = data.code
+        //判断
+        switch(code){
+              case 0:
+              window.location.href='/';
+              break;
+               case 1:
+              window.alert('用户不存在或者已经被删除');
+              break;
+               case 2:
+              window.alert('您没有操作的权限');
+              break;   
+          }
+
+
+      })
+
+
+
+
+    })
+
+
+
+
+  </script>
 </body>
 
 </html>
