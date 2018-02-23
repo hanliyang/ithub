@@ -2,12 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const responseTime = require('response-time');
-const {checkLogin} = require('./middlewares/auth');
+
 const morgan = require('morgan');
 const serveIndex = require('serve-index');
 const compression = require('compression');
 const config = require('./config');
-
+const {checkLogin} = require('./middlewares/auth');
 const MySQLStore = require('express-mysql-session')(session);
 const sessionStore = new MySQLStore(config.dbConfig);
 
@@ -28,6 +28,7 @@ app.use('/public', express.static('./public/'), serveIndex('./public/', {'icons'
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const topicRouter = require('./routes/topic');
+const commentRouter = require('./routes/comment');
 
 // 配置响应事件的中间件
 //    该中间件会帮你在响应头中加入一个字段：
@@ -38,6 +39,8 @@ app.use('/node_modules', express.static('./node_modules/'));
 app.use('/public', express.static('./public/'));
 
 // 配置模板引擎
+// 删除原生语法规则
+require('art-template').defaults.rules.shift();
 // 这里我把 art 改为 html
 app.engine('html', require('express-art-template'));
 
@@ -66,7 +69,7 @@ app.use(session({
 // 注意：该中间件一定要写在配置 Session 中间件以及我们的路由之前
 app.use((req, res, next) => {
   app.locals.user = req.session.user
-  console.log(app.locals.user);
+  
   next()
 });
 
@@ -74,6 +77,7 @@ app.use((req, res, next) => {
 app.use(indexRouter);
 app.use(userRouter);
 app.use('/topic', checkLogin, topicRouter);
+app.use('/topic', commentRouter);
 
 // 错误处理中间件
 // 它需要显示的接收 4 个参数

@@ -37,92 +37,59 @@
       <div>{{@ topics.content }}</div>
       {{ /if }}
     </article>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <span>lipengzhou</span> commented 
-          <span>24 minutes ago</span>
-          <span class="action">
-            <a href=""><i class="glyphicon glyphicon-thumbs-up pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-          </span>
-        </div>
-        <div class="panel-body">
-          评论测试
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <span>lipengzhou</span> commented 
-          <span>24 minutes ago</span>
-          <span class="action">
-            <a href=""><i class="glyphicon glyphicon-thumbs-up pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-          </span>
-        </div>
-        <div class="panel-body">
-          评论测试
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <span>lipengzhou</span> commented 
-          <span>24 minutes ago</span>
-          <span class="action">
-            <a href=""><i class="glyphicon glyphicon-thumbs-up pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-          </span>
-        </div>
-        <div class="panel-body">
-          评论测试
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <span>lipengzhou</span> commented 
-          <span>24 minutes ago</span>
-          <span class="action">
-            <a href=""><i class="glyphicon glyphicon-thumbs-up pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-          </span>
-        </div>
-        <div class="panel-body">
-          评论测试
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <span>lipengzhou</span> commented 
-          <span>24 minutes ago</span>
-          <span class="action">
-            <a href=""><i class="glyphicon glyphicon-thumbs-up pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
-          </span>
-        </div>
-        <div class="panel-body">
-          评论测试
-        </div>
-      </div>
-      <hr>
-      <form>
+      <!-- 评论列表 -->
+    <div class="comment-container">
+    </div>
+    <!-- /评论列表 -->
+
+    <!-- 评论分页 -->
+    <ul id="pagination-demo">
+      
+    </ul>
+    
+      {{if !user}}
+      <div class="alert alert-success" role="alert"><a href="/signin">登陆</a>之后才能发表评论</div>
+      {{else}}
+      <form  id = comment_form action="/topic/{{topics.id}}/comment" method="post">
         <div class="form-group">
           <label for="exampleInputPassword1">添加回复</label>
-          <textarea class="form-control" name="" id="" cols="10" rows="10"></textarea>
+          <textarea class="form-control" name="content" id="" cols="10" rows="10"></textarea>
         </div>
         <button type="submit" class="btn btn-success">回复</button>
       </form>
+      {{/if}}
     </div>
   </div>
 </section>
   {{include '../_includes/footer.html'}}
   <script src="/node_modules/jquery/dist/jquery.js"></script>
+   <script src="/node_modules/jquery-form/dist/jquery.form.min.js"></script>
   <script src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="/node_modules/art-template/lib/template-web.js"></script>
+  <script src="/node_modules/twbs-pagination/jquery.twbsPagination.min.js"></script>
+ <script type="text/template" id="tpl">
+    <% comments.forEach(function (item, index) { %>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span>lipengzhou</span> commented 
+          <span>24 minutes ago</span>
+          <span class="action">
+            <a href=""><i class="glyphicon glyphicon-thumbs-up pull-right"></i></a>
+            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
+            <a href=""><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>
+          </span>
+        </div>
+        <div class="panel-body">
+          <%= item.content %>
+        </div>
+      </div>
+    <% }) %>
+  </script>
   <script type="text/javascript">
-    //为删除注册点击事件
+    var $commentForm = $('#comment_form');
+    loadComments();
+
+ //为删除注册点击事件
     $('#delete').on('click',function(e){
         e.preventDefault();
       //获取路径
@@ -155,7 +122,61 @@
 
 
 
+    });
+
+
+
+
+
+
+   // 1. 展示评论列表
+    // 2. 发布评论
+
+    $commentForm.on('submit', function (e) {
+      e.preventDefault()
+      $(this).ajaxSubmit({
+        error: function (err) {
+          if (err && err.status === 401) {
+            window.alert('登陆状态已过期，请重新登录')
+          }
+        },
+        success: function (data) {
+          var code = data.code
+          if (code === 0) {
+            loadComments()
+          }
+        }
+      })
     })
+
+    function loadComments(page = 1) {
+      var topicListUrl = $commentForm.attr('action')
+      topicListUrl = topicListUrl + '?page=' + page
+
+      $.get(topicListUrl, function (data) {
+        var htmlStr = template('tpl', {
+          comments: data.data
+        })
+        // 渲染列表数据
+        $('.comment-container').html(htmlStr)
+
+        // 渲染分页数据
+        $('#pagination-demo').twbsPagination({
+          totalPages: Math.ceil(data.count / 10),
+          visiblePages: 5,
+          onPageClick: function (event, page) {
+            loadComments(page)
+          }
+        })
+      })
+    }
+
+
+
+
+
+
+   
 
 
 
